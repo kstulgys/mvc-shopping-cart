@@ -45,6 +45,13 @@ class Store {
     this.allProducts = products
     this.pubSub.emit('storeProductsReady', this.allProducts)
   }
+
+  addToCart(id) {
+    const item = this.allProducts.find(el => el.id === id)
+    this.cartItems.push(item)
+    localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
+    this.pubSub.emit('addToCart', id)
+  }
 }
 
 class StoreView {
@@ -58,7 +65,9 @@ class StoreView {
   init() {
     wrapper.insertAdjacentHTML('afterbegin', this.render())
     this.cache.list = document.querySelector('.list')
+    this.cache.productBtns = [...document.querySelectorAll('.btn')]
     this.pubSub.on('storeProductsReady', this.logItems.bind(this))
+    this.pubSub.on('addToCart', this.updateProductsAndCartView.bind(this))
   }
 
   logItems(items) {
@@ -66,6 +75,11 @@ class StoreView {
     items.map(el => {
       this.cache.list.insertAdjacentHTML('beforeend', this.getListItem(el))
     })
+  }
+
+  updateProductsAndCartView(id) {
+    const productBtn = this.cache.productBtns.find(btn => btn.dataset.id === id)
+    productBtn.style.disabled = true
   }
 
   render() {
