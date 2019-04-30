@@ -1,30 +1,4 @@
-class PubSub {
-  constructor() {
-    this.registry = {}
-  }
-
-  on(evtName, cb) {
-    this.registry[evtName] = this.registry[evtName] || []
-    this.registry[evtName].push(cb)
-  }
-
-  off(evtName, cb) {
-    if (this.registry[evtName]) {
-      for (let i = 0; i < this.registry[evtName].length; i++) {
-        if (this.registry[evtName][i] === cb) {
-          this.registry[evtName].splice(i, 1)
-          break
-        }
-      }
-    }
-  }
-
-  emit(evtName, data) {
-    if (this.registry[evtName]) {
-      this.registry[evtName].forEach(cb => cb(data))
-    }
-  }
-}
+import PubSub from './PubSub'
 
 class Store {
   constructor(pubSub) {
@@ -35,6 +9,18 @@ class Store {
   }
 
   async init() {
+    this.getStoreProducts()
+    this.getCartItemsFromStorage()
+  }
+
+  addToCart(id) {
+    const item = this.allProducts.find(el => el.id === id)
+    this.cartItems.push(item)
+    localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
+    this.pubSub.emit('addToCart', id)
+  }
+
+  getStoreProducts(){
     const { items = [] } = await fetch('products.json').then(res => res.json())
     const products = items.map(item => {
       const { title, price } = item.fields
@@ -46,12 +32,11 @@ class Store {
     this.pubSub.emit('storeProductsReady', this.allProducts)
   }
 
-  addToCart(id) {
-    const item = this.allProducts.find(el => el.id === id)
-    this.cartItems.push(item)
-    localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
-    this.pubSub.emit('addToCart', id)
+  getCartItemsFromStorage() {
+    this.cartItems = JSON.parse(localStorage.getItem('cartItems'))
+    this.pubSub.emit('cartItemsReady', this.allProducts)
   }
+
 }
 
 class StoreView {
