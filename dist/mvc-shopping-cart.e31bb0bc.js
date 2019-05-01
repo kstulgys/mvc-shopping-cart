@@ -117,43 +117,87 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":[function(require,module,exports) {
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
-      arr2[i] = arr[i];
-    }
-
-    return arr2;
+})({"node_modules/@babel/runtime/helpers/classCallCheck.js":[function(require,module,exports) {
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
   }
 }
 
-module.exports = _arrayWithoutHoles;
-},{}],"node_modules/@babel/runtime/helpers/iterableToArray.js":[function(require,module,exports) {
-function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+module.exports = _classCallCheck;
+},{}],"node_modules/@babel/runtime/helpers/createClass.js":[function(require,module,exports) {
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
 }
 
-module.exports = _iterableToArray;
-},{}],"node_modules/@babel/runtime/helpers/nonIterableSpread.js":[function(require,module,exports) {
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
 }
 
-module.exports = _nonIterableSpread;
-},{}],"node_modules/@babel/runtime/helpers/toConsumableArray.js":[function(require,module,exports) {
-var arrayWithoutHoles = require("./arrayWithoutHoles");
+module.exports = _createClass;
+},{}],"PubSub.js":[function(require,module,exports) {
+"use strict";
 
-var iterableToArray = require("./iterableToArray");
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
-var nonIterableSpread = require("./nonIterableSpread");
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-function _toConsumableArray(arr) {
-  return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
-}
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-module.exports = _toConsumableArray;
-},{"./arrayWithoutHoles":"node_modules/@babel/runtime/helpers/arrayWithoutHoles.js","./iterableToArray":"node_modules/@babel/runtime/helpers/iterableToArray.js","./nonIterableSpread":"node_modules/@babel/runtime/helpers/nonIterableSpread.js"}],"node_modules/@babel/runtime/node_modules/regenerator-runtime/runtime.js":[function(require,module,exports) {
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var PubSub =
+/*#__PURE__*/
+function () {
+  function PubSub() {
+    (0, _classCallCheck2.default)(this, PubSub);
+    this.registry = {};
+  }
+
+  (0, _createClass2.default)(PubSub, [{
+    key: "on",
+    value: function on(evtName, cb) {
+      this.registry[evtName] = this.registry[evtName] || [];
+      this.registry[evtName].push(cb);
+    }
+  }, {
+    key: "off",
+    value: function off(evtName, cb) {
+      if (this.registry[evtName]) {
+        for (var i = 0; i < this.registry[evtName].length; i++) {
+          if (this.registry[evtName][i] === cb) {
+            this.registry[evtName].splice(i, 1);
+            break;
+          }
+        }
+      }
+    }
+  }, {
+    key: "emit",
+    value: function emit(evtName, data) {
+      if (this.registry[evtName]) {
+        this.registry[evtName].forEach(function (cb) {
+          return cb(data);
+        });
+      }
+    }
+  }]);
+  return PubSub;
+}();
+
+exports.default = PubSub;
+},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js"}],"node_modules/@babel/runtime/node_modules/regenerator-runtime/runtime.js":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -922,32 +966,6 @@ function _asyncToGenerator(fn) {
 }
 
 module.exports = _asyncToGenerator;
-},{}],"node_modules/@babel/runtime/helpers/classCallCheck.js":[function(require,module,exports) {
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-module.exports = _classCallCheck;
-},{}],"node_modules/@babel/runtime/helpers/createClass.js":[function(require,module,exports) {
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
-
-module.exports = _createClass;
 },{}],"products.js":[function(require,module,exports) {
 "use strict";
 
@@ -1079,10 +1097,13 @@ function _default() {
     }
   }];
 }
-},{}],"index.js":[function(require,module,exports) {
+},{}],"Store.js":[function(require,module,exports) {
 "use strict";
 
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -1095,46 +1116,6 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 var _products = _interopRequireDefault(require("./products"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// import PubSub from './PubSub'
-var PubSub =
-/*#__PURE__*/
-function () {
-  function PubSub() {
-    (0, _classCallCheck2.default)(this, PubSub);
-    this.registry = {};
-  }
-
-  (0, _createClass2.default)(PubSub, [{
-    key: "on",
-    value: function on(evtName, cb) {
-      this.registry[evtName] = this.registry[evtName] || [];
-      this.registry[evtName].push(cb);
-    }
-  }, {
-    key: "off",
-    value: function off(evtName, cb) {
-      if (this.registry[evtName]) {
-        for (var i = 0; i < this.registry[evtName].length; i++) {
-          if (this.registry[evtName][i] === cb) {
-            this.registry[evtName].splice(i, 1);
-            break;
-          }
-        }
-      }
-    }
-  }, {
-    key: "emit",
-    value: function emit(evtName, data) {
-      if (this.registry[evtName]) {
-        this.registry[evtName].forEach(function (cb) {
-          return cb(data);
-        });
-      }
-    }
-  }]);
-  return PubSub;
-}();
 
 var Store =
 /*#__PURE__*/
@@ -1269,6 +1250,21 @@ function () {
   return Store;
 }();
 
+exports.default = Store;
+},{"@babel/runtime/regenerator":"node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"node_modules/@babel/runtime/helpers/asyncToGenerator.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","./products":"products.js"}],"StoreView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var StoreView =
 /*#__PURE__*/
 function () {
@@ -1283,39 +1279,48 @@ function () {
   (0, _createClass2.default)(StoreView, [{
     key: "init",
     value: function init() {
-      wrapper.insertAdjacentHTML('afterbegin', this.render());
-      this.cache.list = document.querySelector('.list');
-      this.cache.productBtns = (0, _toConsumableArray2.default)(document.querySelectorAll('.btn'));
-      this.pubSub.on('storeProductsReady', this.logItems.bind(this));
-      this.pubSub.on('addToCart', this.updateProductsAndCartView.bind(this));
+      wrapper.insertAdjacentHTML('afterbegin', this.render()); // this.cache.products = document.querySelector('.products-center')
+      // this.cache.productBtns = [...document.querySelectorAll('.btn')]
+      // this.pubSub.on('storeProductsReady', this.logItems.bind(this))
+      // this.pubSub.on('addToCart', this.updateProductsAndCartView.bind(this))
     } // logItems(items) {
     //   console.log(items)
     //   items.map(el => {
     //     this.cache.list.insertAdjacentHTML('beforeend', this.getListItem(el))
     //   })
     // }
+    //   updateProductsAndCartView(id) {
+    //     const productBtn = this.cache.productBtns.find(btn => btn.dataset.id === id)
+    //     productBtn.style.disabled = true
+    //   }
 
-  }, {
-    key: "updateProductsAndCartView",
-    value: function updateProductsAndCartView(id) {
-      var productBtn = this.cache.productBtns.find(function (btn) {
-        return btn.dataset.id === id;
-      });
-      productBtn.style.disabled = true;
-    }
   }, {
     key: "render",
     value: function render() {
-      return "<div>\n      \n            </div>\n            ";
-    }
-  }, {
-    key: "getListItem",
-    value: function getListItem(item) {
-      return "<li>".concat(item.title, "</li>");
-    }
+      return "\n            <article class=\"product\">\n            <div class=\"img-container\">\n                <img\n                src=\"./images/product-1.jpeg\"\n                alt=\"product\"\n                class=\"product-img\"\n                />\n                <button class=\"bag-btn\" data-id=\"1\">\n                <i class=\"fas fa-shopping-cart\"></i>\n                add to bag\n                </button>\n            </div>\n            <h3>queen bed</h3>\n            <h4>$160</h4>\n            </article>\n              ";
+    } //   getListItem(item) {
+    //     return `<li>${item.title}</li>`
+    //   }
+
   }]);
   return StoreView;
 }();
+
+exports.default = StoreView;
+},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js"}],"index.js":[function(require,module,exports) {
+"use strict";
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _PubSub = _interopRequireDefault(require("./PubSub"));
+
+var _Store = _interopRequireDefault(require("./Store"));
+
+var _StoreView = _interopRequireDefault(require("./StoreView"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var StoreController =
 /*#__PURE__*/
@@ -1334,11 +1339,14 @@ function () {
   return StoreController;
 }();
 
-var wrapper = document.getElementById('root');
-var pubSub = new PubSub(); // const view = new StoreView(wrapper, pubSub)
+var wrapper = document.querySelector('.products-center'); // const wrapper = document.getElementById('root')
 
-var store = new Store(pubSub); // const controller = new StoreController(store, view)
-},{"@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/regenerator":"node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"node_modules/@babel/runtime/helpers/asyncToGenerator.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","./products":"products.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+console.log(wrapper);
+var pubSub = new _PubSub.default();
+var store = new _Store.default(pubSub);
+var view = new _StoreView.default(wrapper, pubSub);
+var controller = new StoreController(store, view);
+},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","./PubSub":"PubSub.js","./Store":"Store.js","./StoreView":"StoreView.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1366,7 +1374,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53621" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54826" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

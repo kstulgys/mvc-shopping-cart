@@ -1,115 +1,6 @@
-// import PubSub from './PubSub'
-import items from './products'
-class PubSub {
-  constructor() {
-    this.registry = {}
-  }
-
-  on(evtName, cb) {
-    this.registry[evtName] = this.registry[evtName] || []
-    this.registry[evtName].push(cb)
-  }
-
-  off(evtName, cb) {
-    if (this.registry[evtName]) {
-      for (let i = 0; i < this.registry[evtName].length; i++) {
-        if (this.registry[evtName][i] === cb) {
-          this.registry[evtName].splice(i, 1)
-          break
-        }
-      }
-    }
-  }
-
-  emit(evtName, data) {
-    if (this.registry[evtName]) {
-      this.registry[evtName].forEach(cb => cb(data))
-    }
-  }
-}
-
-class Store {
-  constructor(pubSub) {
-    this.pubSub = pubSub
-    this.allProducts = []
-    this.cartItems = []
-    this.init()
-  }
-
-  async init() {
-    await this.getStoreProducts()
-    await this.getCartItemsFromStorage()
-  }
-
-  addToCart(id) {
-    const item = this.allProducts.find(el => el.id === id)
-    this.cartItems.push(item)
-    localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
-    this.pubSub.emit('addToCart', id)
-  }
-
-  async getStoreProducts() {
-    // const { items = [] } = await fetch('products.json').then(res => res.json())
-    const products = items().map(item => {
-      const { title, price } = item.fields
-      const { id } = item.sys
-      const image = item.fields.image.fields.file.url
-      return { title, price, id, image }
-    })
-    this.allProducts = products
-    console.log(this.allProducts)
-    this.pubSub.emit('storeProductsReady', this.allProducts)
-    // const data = await fetch('https://randomuser.me/api/').then(res =>
-    //   res.json()
-    // )
-    // console.log(data)
-  }
-
-  async getCartItemsFromStorage() {
-    this.cartItems = await JSON.parse(localStorage.getItem('cartItems'))
-    this.pubSub.emit('cartItemsReady', this.allProducts)
-  }
-}
-
-class StoreView {
-  constructor(wrapper, pubSub) {
-    this.wrapper = wrapper
-    this.pubSub = pubSub
-    this.cache = {}
-    this.init()
-  }
-
-  init() {
-    wrapper.insertAdjacentHTML('afterbegin', this.render())
-    this.cache.list = document.querySelector('.list')
-    this.cache.productBtns = [...document.querySelectorAll('.btn')]
-    this.pubSub.on('storeProductsReady', this.logItems.bind(this))
-    this.pubSub.on('addToCart', this.updateProductsAndCartView.bind(this))
-  }
-
-  // logItems(items) {
-  //   console.log(items)
-  //   items.map(el => {
-  //     this.cache.list.insertAdjacentHTML('beforeend', this.getListItem(el))
-  //   })
-  // }
-
-  updateProductsAndCartView(id) {
-    const productBtn = this.cache.productBtns.find(btn => btn.dataset.id === id)
-    productBtn.style.disabled = true
-  }
-
-  render() {
-    return `<div>
-      
-            </div>
-            `
-  }
-
-  getListItem(item) {
-    return `<li>${item.title}</li>`
-  }
-}
+import PubSub from './PubSub'
+import Store from './Store'
+import StoreView from './StoreView'
 
 class StoreController {
   constructor(store) {
@@ -121,9 +12,10 @@ class StoreController {
     // console.log(this.store.allItems) // logs empty array
   }
 }
-
-const wrapper = document.getElementById('root')
+const wrapper = document.querySelector('.products-center')
+// const wrapper = document.getElementById('root')
+console.log(wrapper)
 const pubSub = new PubSub()
-// const view = new StoreView(wrapper, pubSub)
 const store = new Store(pubSub)
-// const controller = new StoreController(store, view)
+const view = new StoreView(wrapper, pubSub)
+const controller = new StoreController(store, view)
