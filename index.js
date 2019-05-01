@@ -1,4 +1,32 @@
-import PubSub from './PubSub'
+// import PubSub from './PubSub'
+import items from './products'
+class PubSub {
+  constructor() {
+    this.registry = {}
+  }
+
+  on(evtName, cb) {
+    this.registry[evtName] = this.registry[evtName] || []
+    this.registry[evtName].push(cb)
+  }
+
+  off(evtName, cb) {
+    if (this.registry[evtName]) {
+      for (let i = 0; i < this.registry[evtName].length; i++) {
+        if (this.registry[evtName][i] === cb) {
+          this.registry[evtName].splice(i, 1)
+          break
+        }
+      }
+    }
+  }
+
+  emit(evtName, data) {
+    if (this.registry[evtName]) {
+      this.registry[evtName].forEach(cb => cb(data))
+    }
+  }
+}
 
 class Store {
   constructor(pubSub) {
@@ -9,8 +37,8 @@ class Store {
   }
 
   async init() {
-    this.getStoreProducts()
-    this.getCartItemsFromStorage()
+    await this.getStoreProducts()
+    await this.getCartItemsFromStorage()
   }
 
   addToCart(id) {
@@ -20,23 +48,27 @@ class Store {
     this.pubSub.emit('addToCart', id)
   }
 
-  getStoreProducts(){
-    const { items = [] } = await fetch('products.json').then(res => res.json())
-    const products = items.map(item => {
+  async getStoreProducts() {
+    // const { items = [] } = await fetch('products.json').then(res => res.json())
+    const products = items().map(item => {
       const { title, price } = item.fields
       const { id } = item.sys
       const image = item.fields.image.fields.file.url
       return { title, price, id, image }
     })
     this.allProducts = products
+    console.log(this.allProducts)
     this.pubSub.emit('storeProductsReady', this.allProducts)
+    // const data = await fetch('https://randomuser.me/api/').then(res =>
+    //   res.json()
+    // )
+    // console.log(data)
   }
 
-  getCartItemsFromStorage() {
-    this.cartItems = JSON.parse(localStorage.getItem('cartItems'))
+  async getCartItemsFromStorage() {
+    this.cartItems = await JSON.parse(localStorage.getItem('cartItems'))
     this.pubSub.emit('cartItemsReady', this.allProducts)
   }
-
 }
 
 class StoreView {
@@ -55,12 +87,12 @@ class StoreView {
     this.pubSub.on('addToCart', this.updateProductsAndCartView.bind(this))
   }
 
-  logItems(items) {
-    console.log(items)
-    items.map(el => {
-      this.cache.list.insertAdjacentHTML('beforeend', this.getListItem(el))
-    })
-  }
+  // logItems(items) {
+  //   console.log(items)
+  //   items.map(el => {
+  //     this.cache.list.insertAdjacentHTML('beforeend', this.getListItem(el))
+  //   })
+  // }
 
   updateProductsAndCartView(id) {
     const productBtn = this.cache.productBtns.find(btn => btn.dataset.id === id)
@@ -69,8 +101,7 @@ class StoreView {
 
   render() {
     return `<div>
-              <h1>Items List</h1>
-                <ul class="list"></ul>
+      
             </div>
             `
   }
@@ -93,6 +124,6 @@ class StoreController {
 
 const wrapper = document.getElementById('root')
 const pubSub = new PubSub()
-const view = new StoreView(wrapper, pubSub)
+// const view = new StoreView(wrapper, pubSub)
 const store = new Store(pubSub)
-const controller = new StoreController(store, view)
+// const controller = new StoreController(store, view)

@@ -38,7 +38,7 @@
 /* --------------- Hero ---------------- */
 .hero {
   min-height: calc(100vh - 60px);
-  background: url('./images/hero-bcg.jpeg') center/cover no-repeat;
+  background: url('/hero-bcg.40dc9492.jpeg') center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,3 +145,6 @@
 }
 
 /* ---------------End of Products ---------------- */
+
+
+/*# sourceMappingURL=/styles.8986bff4.css.map */

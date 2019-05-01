@@ -18,7 +18,9 @@ body {
   background: var(--mainWhite);
   font-family: 'Lato', sans-serif;
 }
+
 /* --------------- Navbar ---------------- */
+
 .navbar {
   position: sticky;
   top: 0;
@@ -54,8 +56,11 @@ body {
   border-radius: 30%;
   color: var(--mainWhite);
 }
+
 /* --------------- End of Navbar ---------------- */
+
 /* --------------- Hero ---------------- */
+
 .hero {
   min-height: calc(100vh - 60px);
   background: url('./images/hero-bcg.jpeg') center/cover no-repeat;
@@ -90,7 +95,9 @@ body {
   background: transparent;
   color: var(--primaryColor);
 }
+
 /* --------------- End of Hero ---------------- */
+
 /* --------------- Products ---------------- */
 
 .products {
@@ -165,7 +172,9 @@ body {
 }
 
 /* ---------------End of Products ---------------- */
+
 /* --------------- Cart ---------------- */
+
 .cart-overlay {
   position: fixed;
   top: 0;
