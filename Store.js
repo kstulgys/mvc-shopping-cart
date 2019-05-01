@@ -1,44 +1,52 @@
-import items from './products'
+// import items from './products'
 
-export default class Store {
-  constructor(pubSub) {
-    this.pubSub = pubSub
-    this.allProducts = []
-    this.cartItems = []
-    this.init()
-  }
+;(function(window) {
+  const Store = class Store {
+    constructor(pubSub) {
+      this.pubSub = pubSub
+      this.allProducts = []
+      this.cartItems = []
+      this.init()
+    }
 
-  async init() {
-    await this.getStoreProducts()
-    await this.getCartItemsFromStorage()
-  }
+    async init() {
+      await this.getCartItems()
+      await this.getStoreProducts()
+      this.pubSub.emit('storeProductsReady', this.allProducts)
+      this.getState()
+    }
 
-  addToCart(id) {
-    const item = this.allProducts.find(el => el.id === id)
-    this.cartItems.push(item)
-    localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
-    this.pubSub.emit('addToCart', id)
-  }
+    addToCart(id) {
+      this.allProducts.find(el => el.id === id).inCart = true
+      const findProduct = this.allProducts.find(el => el.id === id)
+      this.cartItems.push(findProduct)
+      localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
+      this.pubSub.emit('addToCart', id)
+    }
 
-  async getStoreProducts() {
-    // const { items = [] } = await fetch('products.json').then(res => res.json())
-    const products = items().map(item => {
-      const { title, price } = item.fields
-      const { id } = item.sys
-      const image = item.fields.image.fields.file.url
-      return { title, price, id, image }
-    })
-    this.allProducts = products
-    console.log(this.allProducts)
-    this.pubSub.emit('storeProductsReady', this.allProducts)
-    // const data = await fetch('https://randomuser.me/api/').then(res =>
-    //   res.json()
-    // )
-    // console.log(data)
-  }
+    async getStoreProducts() {
+      const { items = [] } = await fetch('products.json').then(res =>
+        res.json()
+      )
 
-  async getCartItemsFromStorage() {
-    this.cartItems = await JSON.parse(localStorage.getItem('cartItems'))
-    this.pubSub.emit('cartItemsReady', this.allProducts)
+      const products = items.map(item => {
+        const { title, price } = item.fields
+        const { id } = item.sys
+        const image = item.fields.image.fields.file.url
+        const inCart = this.cartItems.findIndex(item => item.id === id) > -1
+        return { title, price, id, image, inCart }
+      })
+      this.allProducts = products
+    }
+
+    async getCartItems() {
+      const cartItems = await JSON.parse(localStorage.getItem('cartItems'))
+      this.cartItems = cartItems || []
+    }
+
+    getState() {
+      console.log('allProducts', this.allProducts)
+    }
   }
-}
+  window.CLASSES.Store = Store
+})(window)

@@ -1,21 +1,9 @@
-import PubSub from './PubSub'
-import Store from './Store'
-import StoreView from './StoreView'
+const { PubSub, Store, StoreView, StoreController } = window.CLASSES
 
-class StoreController {
-  constructor(store) {
-    this.store = store
-    this.init()
-  }
-
-  init() {
-    // console.log(this.store.allItems) // logs empty array
-  }
+window.onload = () => {
+  let wrapper = document.querySelector('.products-center')
+  const pubSub = new PubSub()
+  const store = new Store(pubSub)
+  const view = new StoreView(wrapper, pubSub)
+  const controller = new StoreController(store, view, pubSub)
 }
-const wrapper = document.querySelector('.products-center')
-// const wrapper = document.getElementById('root')
-console.log(wrapper)
-const pubSub = new PubSub()
-const store = new Store(pubSub)
-const view = new StoreView(wrapper, pubSub)
-const controller = new StoreController(store, view)
