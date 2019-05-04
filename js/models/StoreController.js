@@ -8,33 +8,47 @@
     }
 
     init() {
-      // fire products listener when products in the store
-      // this.pubSub.on('storeProductsReady', this.setProductsListener.bind(this))
       this.setProductsListener()
     }
 
     setProductsListener() {
-      this.view.cache.productList.onclick = e => {
+      const {
+        productList,
+        cartBtnClose,
+        cartBtnOpen,
+        clearCart,
+        cartContent
+      } = this.view.cache
+
+      productList.onclick = e => {
         if (e.target.matches('.bag-btn')) {
           const id = e.target.dataset.id
-          // add to store cart (store)
           this.store.addToCart(id)
         }
       }
-      this.view.cache.cartBtnClose.onclick = () => {
+
+      cartBtnClose.onclick = () => {
         this.view.closeCart()
       }
-      this.view.cache.cartBtnOpen.onclick = () => {
+
+      cartBtnOpen.onclick = () => {
         this.view.openCart()
       }
-      this.view.cache.clearCart.onclick = () => {
+
+      clearCart.onclick = () => {
         this.store.clearCart()
       }
-      this.view.cache.cartContent.onclick = e => {
+
+      cartContent.onclick = e => {
         const id = e.target.closest('.cart-item').dataset.id
-        // console.log(id)
         if (e.target.matches('.remove-item')) {
           this.store.removeCartItem(id)
+        }
+        if (e.target.matches('.fa-chevron-up')) {
+          this.store.updateCartTotal(id, 'inc')
+        }
+        if (e.target.matches('.fa-chevron-down')) {
+          this.store.updateCartTotal(id, 'dec')
         }
       }
     }

@@ -8,6 +8,7 @@
     }
 
     init() {
+      // cache DOM elements
       this.cache.productList = document.querySelector('.products-center')
       this.cache.cartBtnOpen = document.querySelector('.cart-btn')
       this.cache.cartBtnClose = document.querySelector('.close-cart')
@@ -16,15 +17,17 @@
       this.cache.cart = document.querySelector('.cart')
       this.cache.cartContent = document.querySelector('.cart-content')
       this.cache.clearCart = document.querySelector('.clear-cart')
-
+      this.cache.cartTotal = document.querySelector('.cart-total')
+      // set data change listeners
       this.pubSub.on('storeProductsReady', this.initialRender.bind(this))
       this.pubSub.on('addToCart', this.addToCart.bind(this))
       this.pubSub.on('removeCartItem', this.removeCartItem.bind(this))
+      this.pubSub.on('updateCartTotal', this.updateCartTotal.bind(this))
     }
 
-    initialRender({ products, cartItems }) {
+    initialRender({ products, cart }) {
       this.displayProducts(products)
-      this.displayCartItems(cartItems)
+      this.displayCartItems(cart)
     }
 
     displayProducts(products) {
@@ -37,34 +40,55 @@
       })
     }
 
-    displayCartItems(cartItems) {
-      this.cache.cartItemsLength.textContent = cartItems.length
+    displayCartItems(cart) {
+      this.cache.cartItemsLength.textContent = cart.items.length
       this.cache.cartContent.textContent = ''
-      cartItems.forEach(item => {
+      cart.items.forEach(item => {
         this.cache.cartContent.insertAdjacentHTML(
           'beforeend',
           this.renderCartItem(item)
         )
       })
+      this.cache.cartTotal.textContent = `$${cart.total}`
     }
 
-    addToCart({ item, cartLength }) {
+    addToCart({ item, cart }) {
+      const {
+        cartItemsLength,
+        cartOverlay,
+        cart: cartEl,
+        cartTotal,
+        cartContent
+      } = this.cache
+      // update cart items count
+      cartItemsLength.textContent = cart.items.length
+      // make cart panel visible
+      cartOverlay.classList.add('overlayActive')
+      cartEl.classList.add('cartActive')
+      // render cart items
+      cartContent.insertAdjacentHTML('beforeend', this.renderCartItem(item))
+      // update cart total
+      cartTotal.textContent = `$${cart.total}`
+      // disable product button
       let btn = document.querySelector(`[data-id="${item.id}"]`)
       const text = document.createTextNode('in cart')
       btn.replaceChild(text, btn.childNodes[2])
       btn.disabled = true
-      this.cache.cartItemsLength.textContent = cartLength
-      this.cache.cartOverlay.classList.add('overlayActive')
-      this.cache.cart.classList.add('cartActive')
-      this.cache.cartContent.insertAdjacentHTML(
-        'beforeend',
-        this.renderCartItem(item)
-      )
     }
-    removeCartItem(id) {
+
+    removeCartItem({ id, cart }) {
+      const { cartItemsLength, cartTotal } = this.cache
+      // update cart items count
+      cartItemsLength.textContent = cart.items.length
+      // update cart total
+      cartTotal.textContent = `$${cart.total}`
+      // remove item
       let item = document.querySelector(`.cart-item[data-id="${id}"]`)
-      item.parentElement.removeChild(item)
-      let btn = document.querySelector(`[data-id="${id}"]`)
+      if (item) {
+        item.parentElement.removeChild(item)
+      }
+      // enable product button
+      let btn = document.querySelector(`.bag-btn[data-id="${id}"]`)
       const text = document.createTextNode('add to cart')
       btn.replaceChild(text, btn.childNodes[2])
       btn.disabled = false
@@ -77,6 +101,17 @@
     openCart() {
       this.cache.cartOverlay.classList.add('overlayActive')
       this.cache.cart.classList.add('cartActive')
+    }
+
+    updateCartTotal({ id, count, total }) {
+      let item = document.querySelector(`.cart-item[data-id="${id}"]`)
+      if (item) {
+        // update item count
+        let countNode = item.childNodes[5].childNodes[3]
+        countNode.textContent = count
+      }
+      // update cart total
+      this.cache.cartTotal.textContent = `$${total}`
     }
 
     renderProduct({ image, id, title, price, inCart }) {
@@ -99,7 +134,7 @@
             `
     }
 
-    renderCartItem({ title, image, price, id }) {
+    renderCartItem({ title, image, price, id, count }) {
       return `
             <div class="cart-item" data-id="${id}">
               <img src=${image} alt="product" />
@@ -112,7 +147,7 @@
               </div>
               <div>
                 <i class="fas fa-chevron-up"></i>
-                <p class="item-amount">6</p>
+                <p class="item-amount">${count}</p>
                 <i class="fas fa-chevron-down"></i>
               </div>
             </div>

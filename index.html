@@ -4,16 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <!-- FONT AWESOME -->
+    <!-- font awesome -->
     <link
       rel="stylesheet"
       href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
       integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
       crossorigin="anonymous"
     />
-    <!-- CUSTOM CSS -->
-    <link rel="stylesheet" href="base.css" />
-    <link rel="stylesheet" href="styles.css" />
+    <!-- custom css -->
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/main.css" />
     <title>Things you need</title>
     <script>
       window.CLASSES = {}
@@ -26,17 +26,17 @@
         <span class="nav-icon">
           <i class="fas fa-bars"></i>
         </span>
-        <img src="./images/logo.svg" alt="store logo" />
+        <img src="./assets/images/logo.svg" alt="store logo" />
         <div class="cart-btn">
           <span class="nav-icon">
             <i class="fas fa-cart-plus"></i>
           </span>
-          <div class="cart-items">0</div>
+          <div class="cart-items"></div>
         </div>
       </div>
     </nav>
-
     <!-- end of navbar -->
+
     <!-- hero -->
     <header class="hero">
       <div class="banner">
@@ -45,6 +45,7 @@
       </div>
     </header>
     <!-- end of hero -->
+
     <!-- products -->
     <section class="products">
       <div class="section-title">
@@ -57,7 +58,9 @@
       </div>
     </section>
     <!-- end of products -->
+
     <div class="cart-overlay">
+      <!-- cart aside -->
       <div class="cart">
         <span class="close-cart">
           <i class="fas fa-window-close"> </i>
@@ -65,33 +68,19 @@
         <h2>your cart</h2>
         <div class="cart-content">
           <!-- cart item -->
-          <!-- <div class="cart-item">
-            <img src="./images/product-1.jpeg" alt="product" />
-            <div>
-              <h4>queen bed</h4>
-              <h5>$900</h5>
-              <span class="remove-item">
-                remove
-              </span>
-            </div>
-            <div>
-              <i class="fas fa-chevron-up"></i>
-              <p class="item-amount">6</p>
-              <i class="fas fa-chevron-down"></i>
-            </div>
-          </div> -->
-          <!-- end of  cart item -->
+          <!-- end of cart item -->
         </div>
         <div class="cart-footer">
-          <h3>your total: <span class="cart-total">$900</span></h3>
+          <h3>your total: <span class="cart-total"></span></h3>
           <button class="clear-cart banner-btn">clear cart</button>
         </div>
       </div>
+      <!-- end of cart aside -->
     </div>
-    <script src="PubSub.js"></script>
-    <script src="Store.js"></script>
-    <script src="StoreView.js"></script>
-    <script src="StoreController.js"></script>
+    <script src="./js/models/PubSub.js"></script>
+    <script src="./js/models/Store.js"></script>
+    <script src="./js/models/StoreView.js"></script>
+    <script src="./js/models/StoreController.js"></script>
     <script src="index.js"></script>
   </body>
 </html>

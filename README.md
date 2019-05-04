@@ -7,4 +7,5 @@ Pure vanilla js app created with MVC architecture
 ## Usage
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
