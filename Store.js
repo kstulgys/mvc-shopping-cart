@@ -12,16 +12,25 @@
     async init() {
       await this.getCartItems()
       await this.getStoreProducts()
-      this.pubSub.emit('storeProductsReady', this.allProducts)
+      this.pubSub.emit('storeProductsReady', {
+        products: this.allProducts,
+        cartItems: this.cartItems
+      })
       this.getState()
     }
 
     addToCart(id) {
-      this.allProducts.find(el => el.id === id).inCart = true
-      const findProduct = this.allProducts.find(el => el.id === id)
-      this.cartItems.push(findProduct)
-      localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
-      this.pubSub.emit('addToCart', id)
+      const product = this.allProducts.find(item => item.id === id)
+      if (!this.isInCart(id)) {
+        this.cartItems.push(product)
+        this.allProducts.find(item => item.id === id).inCart = true
+        localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
+        this.pubSub.emit('addToCart', {
+          item: product,
+          cartLength: this.cartItems.length
+        })
+      }
+      this.getState()
     }
 
     async getStoreProducts() {
@@ -33,8 +42,7 @@
         const { title, price } = item.fields
         const { id } = item.sys
         const image = item.fields.image.fields.file.url
-        const inCart = this.cartItems.findIndex(item => item.id === id) > -1
-        return { title, price, id, image, inCart }
+        return { title, price, id, image, inCart: this.isInCart(id) }
       })
       this.allProducts = products
     }
@@ -44,8 +52,27 @@
       this.cartItems = cartItems || []
     }
 
+    isInCart(id) {
+      return this.cartItems.findIndex(item => item.id === id) > -1
+    }
+
     getState() {
       console.log('allProducts', this.allProducts)
+      console.log('cartItems', this.cartItems)
+    }
+
+    removeCartItem(id) {
+      this.cartItems = this.cartItems.filter(item => item.id !== id)
+      localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
+      this.pubSub.emit('removeCartItem', id)
+      this.getState()
+    }
+
+    clearCart() {
+      localStorage.removeItem('cartItems')
+      this.cartItems = []
+      this.getState()
+      this.init()
     }
   }
   window.CLASSES.Store = Store

@@ -176,12 +176,12 @@
   background: rgb(231, 226, 221);
   padding: 1.5rem;
   transition: var(--mainTransition);
-  /* transform: translateX(100%); */
+  transform: translateX(100%);
 }
-.showCart {
+.cartActive {
   transform: translateX(0);
 }
-.transparentBcg {
+.overlayActive {
   visibility: visible;
 }
 @media screen and (min-width: 768px) {

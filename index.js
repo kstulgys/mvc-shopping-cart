@@ -5,5 +5,5 @@ window.onload = () => {
   const pubSub = new PubSub()
   const store = new Store(pubSub)
   const view = new StoreView(wrapper, pubSub)
-  const controller = new StoreController(store, view, pubSub)
+  new StoreController(store, view, pubSub)
 }
